@@ -1,16 +1,47 @@
 name: Build and Deploy to GKE
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      PROJECT_ID:
+        type: string
+        description: your-gcp-project-id
+        default: your-gcp-project-id
+        required: true
+      GKE_CLUSTER:
+        type: string
+        description: your-gke-cluster-name
+        default: your-gke-cluster-name
+        required: true
+      GKE_ZONE:
+        type: string
+        description: us-central1-a
+        default: us-central1-a
+        required: false
+      IMAGE_NAME:
+        type: string
+        description: my-app
+        default: my-app
+        required: true
+      HELM_RELEASE_NAME:
+        type: string
+        description: helm release name
+        default: my-app
+        required: true
+      HELM_CHART_PATH:
+        type: string
+        description: helm chart path
+        default: ./data-health-check
+        required: true
 
-env:
-  PROJECT_ID: your-gcp-project-id
-  GKE_CLUSTER: your-gke-cluster-name
-  GKE_ZONE: us-central1-a
-  IMAGE_NAME: my-app
-  HELM_RELEASE_NAME: my-app
-  HELM_CHART_PATH: ./charts/my-app
+# env:
+#   PROJECT_ID: your-gcp-project-id
+#   GKE_CLUSTER: your-gke-cluster-name
+#   GKE_ZONE: us-central1-a
+#   IMAGE_NAME: my-app
+#   HELM_RELEASE_NAME: my-app
+#   HELM_CHART_PATH: ./charts/my-app
 
 jobs:
   build-deploy:
@@ -23,7 +54,7 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ inputs.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
@@ -33,20 +64,23 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_URI=us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/my-repo/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          IMAGE_URI=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/my-repo/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
       - name: Get GKE credentials
         run: |
-          gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
+          gcloud container clusters get-credentials ${{ inputs.GKE_CLUSTER }} --zone ${{ inputs.GKE_ZONE }}
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ${{ env.HELM_CHART_PATH }} \
+          helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }} \
             --set image.repository=${{ env.IMAGE_URI }} \
             --set image.tag=${{ github.sha }}
+
+#github.sha is the commit hash or sha512 of the commit
+# The commit hash is a unique identifier for each commit in the Git repository.

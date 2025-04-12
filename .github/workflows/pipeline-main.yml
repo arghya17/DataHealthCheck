@@ -1,0 +1,20 @@
+name: pipeline-main
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+      - feature/*
+
+jobs:
+  main:
+    uses: ./.github/workflows/gke.yml
+    secrets: inherit
+    with:
+      PROJECT_ID: aerial-form-456610-m2
+      GKE_CLUSTER: autopilot-cluster-1
+      GKE_ZONE: us-central1
+      IMAGE_NAME: data-health-check
+      HELM_RELEASE_NAME: data-health-check
+      HELM_CHART_PATH: data-health-check
