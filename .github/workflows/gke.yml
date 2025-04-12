@@ -64,7 +64,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_URI=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/my-repo/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
+          IMAGE_URI=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
