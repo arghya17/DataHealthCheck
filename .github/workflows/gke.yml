@@ -90,7 +90,7 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          echo ${env.IMAGE_URI}
+          echo $env.IMAGE_URI
           helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }} \
             --set image.repository=${{ env.IMAGE_URI }} \
             --set image.tag=${{ github.sha }}
