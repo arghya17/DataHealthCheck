@@ -93,7 +93,7 @@ jobs:
           echo $IMAGE_URI
           helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }} \
             --set image.repository=${{ env.IMAGE_URI }} \
-            --set image.tag=${{ github.sha }}
 
+#image_uri is the full path to the image in the Google Artifact Registry. It contians the tag so no need to mention tag again
 #github.sha is the commit hash or sha512 of the commit
 # The commit hash is a unique identifier for each commit in the Git repository.
