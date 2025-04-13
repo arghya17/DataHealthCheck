@@ -77,11 +77,9 @@ jobs:
       - name: Build and push Docker image
         run: |
           IMAGE_URI=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME }}:${{ github.sha }}
-          IMAGE_REPO=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME }}
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-          echo "IMAGE_REPO=$IMAGE_REPO" >> $GITHUB_ENV
 
       - name: Get GKE credentials
         run: |
@@ -94,8 +92,8 @@ jobs:
         run: |
           echo $IMAGE_URI
           helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }} \
-            --set image.repository=${{ env.IMAGE_REPO }} \
-            --set image.tag=${{ github.sha }}
+            --set image.repository=${{ env.IMAGE_URI }} \
 
+#image_uri is the full path to the image in the Google Artifact Registry. It contians the tag so no need to mention tag again
 #github.sha is the commit hash or sha512 of the commit
 # The commit hash is a unique identifier for each commit in the Git repository.
