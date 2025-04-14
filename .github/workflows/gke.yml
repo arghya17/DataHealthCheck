@@ -24,6 +24,11 @@ on:
         description: my-app
         default: my-app
         required: true
+      IMAGE_NAME_2:
+        type: string
+        description: backend-app
+        default: backend-app
+        required: true
       HELM_RELEASE_NAME:
         type: string
         description: helm release name
@@ -83,6 +88,13 @@ jobs:
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
           echo "IMAGE_REPO=$IMAGE_REPO" >> $GITHUB_ENV
 
+          IMAGE_URI_2=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME_2 }}:${{ github.sha }}
+          IMAGE_REPO_2=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME_2 }}
+          docker build -t $IMAGE_URI_2 -f Dockerfile.backend .
+          docker push $IMAGE_URI_2
+          echo "IMAGE_URI_2=$IMAGE_URI_2" >> $GITHUB_ENV
+          echo "IMAGE_REPO_2=$IMAGE_REPO_2" >> $GITHUB_ENV
+
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ inputs.GKE_CLUSTER }} --zone ${{ inputs.GKE_ZONE }}
@@ -92,10 +104,12 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          echo $IMAGE_URI
           helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }} \
             --set image.repository=${{ env.IMAGE_REPO }} \
-            --set image.tag=${{ github.sha }}
+            --set image.tag=${{ github.sha }} \
+            --set backend.imageRepository=${{ env.IMAGE_REPO_2 }} \
+            --set backend.tag=${{ github.sha }}
 
+#image_uri is the full path to the image in the Google Artifact Registry. It contians the tag so no need to mention tag again
 #github.sha is the commit hash or sha512 of the commit
 # The commit hash is a unique identifier for each commit in the Git repository.

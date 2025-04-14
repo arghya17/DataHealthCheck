@@ -16,5 +16,6 @@ jobs:
       GKE_CLUSTER: autopilot-cluster-1
       GKE_ZONE: us-central1
       IMAGE_NAME: data-health-check
+      IMAGE_NAME_2: python-backend
       HELM_RELEASE_NAME: data-health-check
       HELM_CHART_PATH: data-health-check
