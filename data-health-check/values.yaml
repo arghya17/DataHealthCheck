@@ -80,11 +80,11 @@ ingress:
 
 resources:
   requests:
-    memory: "2Gi"
-    cpu: "600m"
-  limits:
     memory: "3Gi"
-    cpu: "1000m"
+    cpu: "900m"
+  limits:
+    memory: "5Gi"
+    cpu: "2000m"
     # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
