@@ -86,12 +86,14 @@ jobs:
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          echo "IMAGE_REPO=$IMAGE_REPO" >> $GITHUB_ENV
 
           IMAGE_URI_2=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME_2 }}:${{ github.sha }}
           IMAGE_REPO_2=us-central1-docker.pkg.dev/${{ inputs.PROJECT_ID }}/data-health-check/${{ inputs.IMAGE_NAME_2 }}
           docker build -t $IMAGE_URI_2 -f Dockerfile.backend .
           docker push $IMAGE_URI_2
           echo "IMAGE_URI_2=$IMAGE_URI_2" >> $GITHUB_ENV
+          echo "IMAGE_REPO_2=$IMAGE_REPO_2" >> $GITHUB_ENV
 
       - name: Get GKE credentials
         run: |
