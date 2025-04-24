@@ -1,4 +1,4 @@
-name: Build and Deploy to GKE
+name: Helm install/upgrade to GKE
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
       PROJECT_ID:
         type: string
         description: your-gcp-project-id
-        default: your-gcp-project-id
-        required: true
+        default: aerial-form-456610-m2
+        required: false
       GKE_CLUSTER:
         type: string
         description: your-gke-cluster-name
-        default: your-gke-cluster-name
-        required: true
+        default: autopilot-cluster-1
+        required: false
       GKE_ZONE:
         type: string
         description: us-central1-a
