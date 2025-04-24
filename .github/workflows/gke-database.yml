@@ -1,0 +1,85 @@
+name: Build and Deploy to GKE
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      PROJECT_ID:
+        type: string
+        description: your-gcp-project-id
+        default: your-gcp-project-id
+        required: true
+      GKE_CLUSTER:
+        type: string
+        description: your-gke-cluster-name
+        default: your-gke-cluster-name
+        required: true
+      GKE_ZONE:
+        type: string
+        description: us-central1-a
+        default: us-central1-a
+        required: false
+      HELM_RELEASE_NAME:
+        type: string
+        description: helm release name
+        default: postgres-database
+        required: true
+      HELM_CHART_PATH:
+        type: string
+        description: helm chart path
+        default: ./databases
+        required: true
+
+# env:
+#   PROJECT_ID: your-gcp-project-id
+#   GKE_CLUSTER: your-gke-cluster-name
+#   GKE_ZONE: us-central1-a
+#   IMAGE_NAME: my-app
+#   HELM_RELEASE_NAME: my-app
+#   HELM_CHART_PATH: ./charts/my-app
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ inputs.PROJECT_ID }}
+
+      - name: Install GKE Auth Plugin
+        run: |
+          gcloud components list
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          sudo apt update
+          sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+          echo "##vso[task.setvariable variable=USE_GKE_GCLOUD_AUTH_PLUGIN]True"
+          gcloud components list
+
+      - name: Authenticate Docker with Google Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials ${{ inputs.GKE_CLUSTER }} --zone ${{ inputs.GKE_ZONE }}
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install ${{ inputs.HELM_RELEASE_NAME }} ${{ inputs.HELM_CHART_PATH }}
+
+#image_uri is the full path to the image in the Google Artifact Registry. It contians the tag so no need to mention tag again
+#github.sha is the commit hash or sha512 of the commit
+# The commit hash is a unique identifier for each commit in the Git repository.
