@@ -45,6 +45,17 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-database-secret
+                  key: password
+            - name: POSTGRES_USER
+              value: "admin"
+            - name: POSTGRES_DB
+              value: "mydb"
+          {{- with .Values.command }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
