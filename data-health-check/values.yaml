@@ -101,11 +101,18 @@ livenessProbe:
   httpGet:
     path: /
     port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 100
+    timeoutSeconds: 5
+    failureThreshold: 6
 readinessProbe:
   httpGet:
     path: /
     port: 5000
-
+    initialDelaySeconds: 30
+    periodSeconds: 100
+    timeoutSeconds: 5
+    failureThreshold: 6
 backend:
   Name: "python-backend"
   imageRepository: us-central1-docker.pkg.dev/aerial-form-456610-m2/my-repo/python-backend
