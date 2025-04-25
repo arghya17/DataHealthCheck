@@ -55,7 +55,6 @@ spec:
               value: "admin"
             - name: POSTGRES_DB
               value: "mydb"
-          {{- with .Values.command }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

@@ -16,7 +16,7 @@ on:
       GKE_ZONE:
         type: string
         description: us-central1-a
-        default: us-central1-a
+        default: us-central1
         required: false
       HELM_RELEASE_NAME:
         type: string
