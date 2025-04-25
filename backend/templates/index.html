@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html
+	lang="en"
+	class="bg-gray-100 min-h-screen flex items-center justify-center"
+>
+	<head>
+		<meta charset="UTF-8" />
+		<title>PostgreSQL Query UI</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body class="p-6">
+		<div class="max-w-4xl w-full bg-white shadow-xl rounded-2xl p-6 space-y-6">
+			<h1 class="text-2xl font-bold text-gray-800">🔍 Query PostgreSQL</h1>
+
+			<form id="query-form" class="space-y-4">
+				<textarea
+					id="query-input"
+					rows="4"
+					placeholder="Enter your SQL query..."
+					class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring focus:border-blue-300"
+				></textarea>
+
+				<button
+					type="submit"
+					class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+				>
+					Run Query
+				</button>
+			</form>
+
+			<div id="result-section" class="overflow-auto hidden">
+				<table class="min-w-full bg-white border border-gray-200 rounded-xl">
+					<thead
+						id="result-header"
+						class="bg-gray-100 text-gray-700 text-left"
+					></thead>
+					<tbody id="result-body" class="text-sm text-gray-800"></tbody>
+				</table>
+			</div>
+
+			<div id="error-msg" class="text-red-600 font-medium hidden"></div>
+		</div>
+
+		<script>
+			document
+				.getElementById("query-form")
+				.addEventListener("submit", async function (e) {
+					e.preventDefault();
+					const query = document.getElementById("query-input").value;
+					const resultSection = document.getElementById("result-section");
+					const resultHeader = document.getElementById("result-header");
+					const resultBody = document.getElementById("result-body");
+					const errorMsg = document.getElementById("error-msg");
+
+					resultSection.classList.add("hidden");
+					errorMsg.classList.add("hidden");
+
+					try {
+						const res = await fetch("http://data-health-check/query", {
+							method: "POST",
+							headers: {"Content-Type": "application/json"},
+							body: JSON.stringify({query}),
+						});
+
+						const data = await res.json();
+						if (data.error) throw new Error(data.error);
+
+						// Build table headers
+						resultHeader.innerHTML =
+							"<tr>" +
+							data.columns
+								.map((col) => `<th class="px-4 py-2">${col}</th>`)
+								.join("") +
+							"</tr>";
+
+						// Build table rows
+						resultBody.innerHTML = data.rows
+							.map(
+								(row) =>
+									"<tr>" +
+									row
+										.map(
+											(cell) => `<td class="border-t px-4 py-2">${cell}</td>`
+										)
+										.join("") +
+									"</tr>"
+							)
+							.join("");
+
+						resultSection.classList.remove("hidden");
+					} catch (err) {
+						errorMsg.textContent = "Error: " + err.message;
+						errorMsg.classList.remove("hidden");
+					}
+				});
+		</script>
+	</body>
+</html>
