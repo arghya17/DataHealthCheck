@@ -127,7 +127,9 @@ volumes: []
 #     optional: false
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
+volumeMounts:
+  - name: postgres-storage
+    mountPath: /var/lib/postgresql/data
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true

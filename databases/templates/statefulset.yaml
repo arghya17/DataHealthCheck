@@ -54,7 +54,7 @@ spec:
             - name: POSTGRES_USER
               value: "admin"
             - name: POSTGRES_DB
-              value: "mydb"
+              value: "admin"
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
@@ -89,7 +89,7 @@ spec:
       {{- end }}
   volumeClaimTemplates:
     - metadata:
-        name: data
+        name: postgres-storage
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
