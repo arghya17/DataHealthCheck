@@ -97,7 +97,7 @@ livenessProbe:
       - -c
       - pg_isready -U admin
   initialDelaySeconds: 30
-  periodSeconds: 10
+  periodSeconds: 100
   timeoutSeconds: 5
   failureThreshold: 6
 readinessProbe:
@@ -107,7 +107,7 @@ readinessProbe:
       - -c
       - pg_isready -U admin
   initialDelaySeconds: 30
-  periodSeconds: 10
+  periodSeconds: 100
   timeoutSeconds: 5
   failureThreshold: 6
 

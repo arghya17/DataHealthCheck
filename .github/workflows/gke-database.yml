@@ -2,6 +2,32 @@ name: Helm install/upgrade to GKE
 
 on:
   workflow_dispatch:
+    inputs:
+      PROJECT_ID:
+        type: string
+        description: your-gcp-project-id
+        default: aerial-form-456610-m2
+        required: false
+      GKE_CLUSTER:
+        type: string
+        description: your-gke-cluster-name
+        default: autopilot-cluster-1
+        required: false
+      GKE_ZONE:
+        type: string
+        description: us-central1-a
+        default: us-central1-a
+        required: false
+      HELM_RELEASE_NAME:
+        type: string
+        description: helm release name
+        default: postgres-database
+        required: true
+      HELM_CHART_PATH:
+        type: string
+        description: helm chart path
+        default: ./databases
+        required: true
   workflow_call:
     inputs:
       PROJECT_ID:
