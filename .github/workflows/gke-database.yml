@@ -53,7 +53,7 @@ on:
       HELM_CHART_PATH:
         type: string
         description: helm chart path
-        default: ./databases
+        default: databases
         required: true
 
 # env:

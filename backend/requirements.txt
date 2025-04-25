@@ -2,3 +2,4 @@ flask
 gunicorn
 numpy
 requests
+psycopg2-binary
